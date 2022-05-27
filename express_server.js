@@ -5,6 +5,18 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bcrypt = require('bcryptjs');
 const {generateRandomString, emailChecker, cookieHasUser} = require('./helpers');
+var mongoose = require('mongoose');
+require("./schema/User")
+
+try {
+  mongoose.connect("mongodb+srv://Jacky:1234@cluster0.xiomi.mongodb.net/?retryWrites=true&w=majority")
+} catch (error) {
+  console.log(error)
+}
+
+var db = mongoose.connection;
+
+const User = mongoose.model('User')
 
 //middlewares
 app.set("view engine", "ejs");
@@ -104,6 +116,7 @@ app.post('/register', (req,res) => {
       email,
       password : bcrypt.hashSync(password, 10),
     };
+    const createdUser = new User(users[id]).save();
     req.session.user_id = id;
     res.redirect("/urls");
   }
